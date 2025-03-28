@@ -1,0 +1,51 @@
+Step 1: Retrieving Existing Data
+MATCH (p:Product) RETURN p LIMIT 5;
+Significance: Fetches a few Product nodes to check if products exist in the database.
+
+MATCH (p:Product) RETURN DISTINCT p.category LIMIT 10;
+Significance: Retrieves unique product categories to ensure category information is available.
+
+Step 2: Creating Category Nodes
+MATCH (p:Product) WITH DISTINCT p.category AS category_name CREATE(:Category {name:category_name});
+Significance: Creates Category nodes from distinct product categories.
+
+MATCH (n:Category) RETURN n LIMIT 25;
+Significance: Fetches category nodes to verify they were created correctly.
+
+Step 3: Establishing Relationships Between Products and Categories
+MATCH (p:Product), (c:Category) WHERE p.category=c.name CREATE (p)-[:BELONGS_TO]->(c);
+Significance: Links each product to its respective category using the BELONGS_TO relationship.
+
+MATCH (p:Product)-[:BELONGS_TO]->(c:Category) RETURN p.product_name, c.name LIMIT 10;
+Significance: Fetches product-category relationships to verify the links.
+
+Step 4: Loading Data into Neo4j from CSV
+LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/.../filtered_amazon_data.csv' AS row RETURN row LIMIT 5;
+Significance: Loads sample data from an external CSV file to check the structure before inserting.
+
+Step 5: Creating Review Nodes and Relationships
+MATCH (n:Review) RETURN n LIMIT 25;
+Significance: Checks if any review nodes exist.
+
+LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/.../filtered_amazon_data.csv' AS row WITH row WHERE row.product_id IS NOT NULL AND row.review_content_cleaned IS NOT NULL MERGE (p:Product {product_id: row.product_id}) SET p.name = row.product_name MERGE (r:Review {content: row.review_content_cleaned}) MERGE (r)-[:REVIEWS]->(p);
+Significance: Creates Review nodes and links them to Product nodes using the REVIEWS relationship.
+
+Step 6: Implementing Product Recommendations
+MATCH (p:Product {product_id: "B098NS6PVG"})<-[:REVIEWS]-(r:Review)-[:REVIEWS]->(other:Product) RETURN other.product_id AS recommended_product, COUNT(*) AS score ORDER BY score DESC LIMIT 5;
+Significance: Finds products that share reviews with a given product, ranking them by relevance.
+
+MATCH (p:Product)-[:SIMILAR_TO]->(rec:Product) RETURN p.product_id, rec.product_id LIMIT 10;
+Significance: Fetches similar product recommendations if the SIMILAR_TO relationship exists.
+
+Step 7: Validating Relationships
+MATCH p=()-[:HAS_PRODUCT]->() RETURN p LIMIT 25;
+Significance: Checks product-category relationships.
+
+MATCH p=()-[:REVIEWS]->() RETURN p LIMIT 25;
+Significance: Verifies product-review relationships.
+
+MATCH p=()-[:SIMILAR_TO]->() RETURN p LIMIT 25;
+Significance: Ensures that product similarity relationships are properly established.
+
+step-8 View all nodes and relationship
+MATCH (n)-[r]->(m) RETURN n, r, m LIMIT 100;
