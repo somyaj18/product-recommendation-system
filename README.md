@@ -16,7 +16,7 @@ It integrates Python, Cypher Queries, and Neo4j AuraDB for efficient data storag
 
 2-Cypher Query Language (CQL)
 
-3-Python (Neo4j Python Driver, Pandas, Scikit-Learn)
+3-Python (Neo4j Python Driver, Pandas, Scikit-Learn,Flask)
 
 4-Jupyter Notebooks (For data analysis and visualization)
 
@@ -51,7 +51,8 @@ ORDER BY score DESC LIMIT 5;
 4️⃣ Fetch Recommendations: Querying Neo4j using Python & Cypher.
 
 
-📌 Visualization
+📌 Visualization (Flask for web framework)
 
+(In Neo4j Database)
 To visualize the full graph structure, use:
 MATCH (n)-[r]->(m) RETURN n, r, m LIMIT 100;
